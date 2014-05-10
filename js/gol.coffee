@@ -8,8 +8,8 @@ do ->
       [x-1, y+1], [x, y+1], [x+1, y+1]
     ]
 
-  arrayEqual = (a, b) ->
-    a.length is b.length and a.every (elem, i) -> elem is b[i]
+  willAlive = (point) ->
+    point[1] is 3 or point[0] and point[1] is 2
 
   step = (currentGeneration) ->
     resultObj = {}
@@ -27,7 +27,7 @@ do ->
 
     nextGeneration = []
     for point of resultObj
-      if arrayEqual(resultObj[point], [1, 2]) or arrayEqual(resultObj[point], [1, 3]) or arrayEqual(resultObj[point], [0, 3])
+      if willAlive resultObj[point]
         nextGeneration.push point.split(',').map(Number)
     nextGeneration
 
