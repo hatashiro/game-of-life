@@ -1,10 +1,14 @@
 do (iter=iter) ->
-  clear = (grid) ->
-    grid.getContext('2d').clearRect 0, 0, grid.width, grid.height
+  clear = (ctx, width, height) ->
+    ctx.clearRect 0, 0, width, height
 
-  mark = (ctx, x, y) ->
-    grid.getContext('2d').fillStyle = '#FFFFFF'
-    grid.getContext('2d').fillRect x, y, 1, 1
+  mark = (pixelData, x, y, width) ->
+    index = (x + y * width) * 4
+
+    pixelData.data[index] = 255
+    pixelData.data[index + 1] = 255
+    pixelData.data[index + 2] = 255
+    pixelData.data[index + 3] = 255
 
   getRandomGrid = (width, height) ->
     result = []
@@ -22,19 +26,21 @@ do (iter=iter) ->
   init = ->
     clearInterval iterLoop if iterLoop
     grid = document.getElementById 'grid'
+    ctx = grid.getContext('2d')
 
     width = window.innerWidth
     height = window.innerHeight
     grid.width = width
     grid.height = height
 
-    clear grid, width, height
-
     g0 = getRandomGrid width, height
     iterLoop = iter g0, (g) ->
-      clear grid
+      clear ctx, width, height
+
+      pixelData = ctx.getImageData 0, 0, width, height
       g.forEach (point) ->
-        mark grid, point[0], point[1]
+        mark pixelData, point[0], point[1], width
+      ctx.putImageData pixelData, 0, 0
 
   window.onresize = init
   init()
